@@ -14,6 +14,7 @@ import { checkIfUserIsPremium } from "../ui/checkPremiumStatus";
 export class QualitySwitcher {
   private readonly MENU_SELECTOR = ".ytp-settings-menu";
   private readonly TRANSPARENT_CLASS = "gso-menu-hidden";
+  private isChangingQuality = false;
 
   private injectStyles(): void {
     if (document.getElementById("gso-styles")) return;
@@ -43,7 +44,22 @@ export class QualitySwitcher {
     }
   }
 
+  private delay(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
   async handleVisibilityChange(): Promise<void> {
+    // Always close the settings menu immediately when tab becomes hidden
+    if (document.hidden) {
+      this.forceCloseSettingsMenu();
+    }
+
+    // Prevent concurrent quality changes
+    if (this.isChangingQuality) {
+      console.log("[qualitySwitcher] Quality change already in progress, skipping.");
+      return;
+    }
+
     try {
       const storedSettings = await this.getQualitiesFromBackground();
       if (!storedSettings || !storedSettings.extensionEnabled) {
@@ -61,7 +77,11 @@ export class QualitySwitcher {
       const targetQuality = document.hidden ? hiddenQuality : visibleQuality;
 
       console.log(`[qualitySwitcher] Quality applied : ${targetQuality}`);
-      this.forceCloseSettingsMenu();  // garanti que le menu des settings est fermé avant la procedure de changement de qualité
+
+      // Close any open menu and wait for it to close
+      this.forceCloseSettingsMenu();
+      await this.delay(300);
+
       await this.setPlayerQuality(targetQuality);
     } catch (error) {
       console.error("[qualitySwitcher] Error when quality changing :", error);
@@ -97,6 +117,11 @@ export class QualitySwitcher {
     });
   }
 
+  private isQualityOption(el: Element): boolean {
+    const text = el.textContent?.trim() || "";
+    return /^\d{3,4}p/.test(text) || /^auto/i.test(text);
+  }
+
   async setPlayerQuality(targetQuality: VideoQuality): Promise<void> {
     const settingsButton = document.querySelector(".ytp-settings-button") as HTMLElement | null;
     if (!settingsButton) {
@@ -104,47 +129,43 @@ export class QualitySwitcher {
       return;
     }
 
-    this.openSettingsMenu(settingsButton, async () => {
-      try {
-        await this.waitForElement(".ytp-quality-menu", 20000);
-        await this.selectQuality(targetQuality, (finalQuality) => {
-          this.notifyQualityChange(finalQuality);
-        });
-      } catch (err) {
-        console.warn(
-          "[qualitySwitcher] Settings menu is not open :",
-          err
-        );
-      }
-    });
+    this.isChangingQuality = true;
+
+    try {
+      await this.openSettingsMenu(settingsButton);
+      await this.waitForElement(
+        ".ytp-menuitem-label",
+        5000,
+        (el) => this.isQualityOption(el)
+      );
+      await this.selectQuality(targetQuality, (finalQuality) => {
+        this.notifyQualityChange(finalQuality);
+      });
+    } catch (err) {
+      console.warn("[qualitySwitcher] Quality change failed:", err);
+      this.forceCloseSettingsMenu();
+    } finally {
+      this.isChangingQuality = false;
+    }
   }
 
-  async openSettingsMenu(
-    button: HTMLElement,
-    callback: () => void
-  ): Promise<void> {
+  async openSettingsMenu(button: HTMLElement): Promise<void> {
     this.injectStyles();
     button.click();
     this.hideMenu();
 
-    try {
-      const qualityItem = await this.waitForElement(
-        ".ytp-menuitem-label",
-        10000,
-        (el) => el.textContent?.toLowerCase().includes("qualit") ?? false
-      );
+    const qualityItem = await this.waitForElement(
+      ".ytp-menuitem-label",
+      10000,
+      (el) => el.textContent?.toLowerCase().includes("qualit") ?? false
+    );
 
-      if (qualityItem instanceof HTMLElement) {
-        qualityItem.click();
-        this.hideMenu();
-        setTimeout(callback, 500);
-      } else {
-        console.warn("[qualitySwitcher] Element 'quality' not found.");
-        this.forceCloseSettingsMenu();
-      }
-    } catch (err) {
-      console.warn("[qualitySwitcher] Timeout on openSettingsMenu :", err);
-      this.forceCloseSettingsMenu();
+    if (qualityItem instanceof HTMLElement) {
+      qualityItem.click();
+      this.hideMenu();
+      await this.delay(500);
+    } else {
+      throw new Error("Quality menu item not found");
     }
   }
 
@@ -164,7 +185,7 @@ export class QualitySwitcher {
       const timeoutId = setTimeout(() => {
         observer.disconnect();
         reject(
-          `⏱ Timeout : element '${selector}' notr found after ${timeout}ms`
+          `⏱ Timeout: element '${selector}' not found after ${timeout}ms`
         );
       }, timeout);
 
@@ -198,13 +219,14 @@ export class QualitySwitcher {
     try {
       const isPremiumUser = await checkIfUserIsPremium();
       console.log(`isPremiumUser: ${isPremiumUser}`);
-      const qualities = document.querySelectorAll(".ytp-quality-menu .ytp-menuitem-label");
+      const allLabels = document.querySelectorAll(".ytp-menuitem-label");
+      const qualities = Array.from(allLabels).filter((el) => this.isQualityOption(el));
       if (qualities.length === 0) {
         console.warn("[qualitySwitcher] No quality found.");
         return;
       }
 
-      const qualityList = Array.from(qualities)
+      const qualityList = qualities
         .map((q) => {
           const label = q.textContent?.trim() || "";
           return {
@@ -215,7 +237,7 @@ export class QualitySwitcher {
             isPremium: this.isPremium(label),
           };
         })
-          .filter((q) => isPremiumUser || !q.isPremium);
+        .filter((q) => isPremiumUser || !q.isPremium);
       let finalQuality: string = targetQuality;
 
       if (targetQuality.toLowerCase() === "auto") {
