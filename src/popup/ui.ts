@@ -13,12 +13,16 @@ export function getUIElements(): PopupUISettings {
   const notificationsCheckbox = document.getElementById(
     "notificationsEnabled"
   ) as HTMLInputElement;
+  const pauseModeCheckbox = document.getElementById(
+    "pauseModeEnabled"
+  ) as HTMLInputElement;
 
   if (
     !extensionCheckbox ||
     !visibleSelect ||
     !hiddenSelect ||
-    !notificationsCheckbox
+    !notificationsCheckbox ||
+    !pauseModeCheckbox
   ) {
     throw new Error("One or more settings of the menu are not found.");
   }
@@ -28,5 +32,6 @@ export function getUIElements(): PopupUISettings {
     visibleSelect,
     hiddenSelect,
     notificationsCheckbox,
+    pauseModeCheckbox,
   };
 }

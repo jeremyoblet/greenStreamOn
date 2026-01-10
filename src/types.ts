@@ -19,6 +19,7 @@ export type Settings = {
   visibleQuality: VideoQuality;
   hiddenQuality: VideoQuality;
   notificationsEnabled: boolean;
+  pauseModeEnabled: boolean;
 };
 
 export type PopupUISettings = {
@@ -26,6 +27,7 @@ export type PopupUISettings = {
   visibleSelect: HTMLSelectElement;
   hiddenSelect: HTMLSelectElement;
   notificationsCheckbox: HTMLInputElement;
+  pauseModeCheckbox: HTMLInputElement;
 };
 
 export type MessageResponse = { success: boolean };

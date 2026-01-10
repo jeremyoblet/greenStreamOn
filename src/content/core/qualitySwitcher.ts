@@ -15,6 +15,7 @@ export class QualitySwitcher {
   private readonly MENU_SELECTOR = ".ytp-settings-menu";
   private readonly TRANSPARENT_CLASS = "gso-menu-hidden";
   private isChangingQuality = false;
+  private wasPlayingBeforeHidden = false;
 
   private injectStyles(): void {
     if (document.getElementById("gso-styles")) return;
@@ -48,6 +49,26 @@ export class QualitySwitcher {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
+  private getVideoElement(): HTMLVideoElement | null {
+    return document.querySelector("video") as HTMLVideoElement | null;
+  }
+
+  private pauseVideo(): void {
+    const video = this.getVideoElement();
+    if (video && !video.paused) {
+      video.pause();
+      console.log("[qualitySwitcher] Video paused (pause mode).");
+    }
+  }
+
+  private playVideo(): void {
+    const video = this.getVideoElement();
+    if (video && video.paused) {
+      video.play();
+      console.log("[qualitySwitcher] Video resumed (pause mode).");
+    }
+  }
+
   async handleVisibilityChange(): Promise<void> {
     // Always close the settings menu immediately when tab becomes hidden
     if (document.hidden) {
@@ -65,6 +86,23 @@ export class QualitySwitcher {
       if (!storedSettings || !storedSettings.extensionEnabled) {
         console.log("[qualitySwitcher] Extension disabled by user.");
         return;
+      }
+
+      // Handle pause mode when tab becomes hidden
+      if (storedSettings.pauseModeEnabled && document.hidden) {
+        // Tab is now hidden - remember if video was playing and pause it
+        this.wasPlayingBeforeHidden = !this.isVideoPaused();
+        if (this.wasPlayingBeforeHidden) {
+          this.pauseVideo();
+        }
+        return; // Don't change quality when pausing
+      }
+
+      // Handle pause mode when tab becomes visible - resume video if needed
+      if (storedSettings.pauseModeEnabled && !document.hidden && this.wasPlayingBeforeHidden) {
+        this.playVideo();
+        this.wasPlayingBeforeHidden = false;
+        // Continue to change quality back to visibleQuality
       }
 
       const isPaused = this.isVideoPaused();

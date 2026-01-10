@@ -17,6 +17,7 @@ export class StorageHandler {
         visibleQuality: result.visibleQuality ?? "Auto",
         hiddenQuality: result.hiddenQuality ?? "144",
         notificationsEnabled: result.notificationsEnabled ?? true,
+        pauseModeEnabled: result.pauseModeEnabled ?? false,
       };
     } catch (error) {
       console.error("[storageHandler] Error reading multiple settings:", error);
@@ -25,6 +26,7 @@ export class StorageHandler {
         visibleQuality: "Auto",
         hiddenQuality: "144",
         notificationsEnabled: true,
+        pauseModeEnabled: false,
       };
     }
   }

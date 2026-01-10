@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     ui.visibleSelect.value = settings.visibleQuality;
     ui.hiddenSelect.value = settings.hiddenQuality;
     ui.notificationsCheckbox.checked = settings.notificationsEnabled;
+    ui.pauseModeCheckbox.checked = settings.pauseModeEnabled;
   }
 
   function getAllSettingsFromUI() {
@@ -23,6 +24,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       visibleQuality: ui.visibleSelect.value as VideoQuality,
       hiddenQuality: ui.hiddenSelect.value as VideoQuality,
       notificationsEnabled: ui.notificationsCheckbox.checked,
+      pauseModeEnabled: ui.pauseModeCheckbox.checked,
     };
   }
 
@@ -48,6 +50,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     ui.notificationsCheckbox.addEventListener("change", async () => {
+      await updateAllSettingsFromUI();
+    });
+
+    ui.pauseModeCheckbox.addEventListener("change", async () => {
       await updateAllSettingsFromUI();
     });
   }

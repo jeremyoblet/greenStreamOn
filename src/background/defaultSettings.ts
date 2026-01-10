@@ -5,4 +5,5 @@ export const defaultSettings: Settings = {
   visibleQuality: "Auto",
   hiddenQuality: "144",
   notificationsEnabled: true,
+  pauseModeEnabled: false,
 };
