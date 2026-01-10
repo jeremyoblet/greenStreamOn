@@ -1,6 +1,6 @@
 type QueuedNotification = { visibility: "visible" | "hidden"; quality: string };
 
-let debounceTimer: NodeJS.Timeout | null = null;
+let debounceTimer: number | null = null;
 const notificationBuffer: QueuedNotification[] = [];
 
 // Map qualité → emoji
@@ -53,6 +53,17 @@ function showGroupedNotification(entries: QueuedNotification[]): void {
       message,
     },
     (id) => {
+      if (chrome.runtime.lastError) {
+        console.error(
+          "[notificationsHandler] Failed to create notification:",
+          chrome.runtime.lastError.message
+        );
+        return;
+      }
+      if (!id) {
+        console.warn("[notificationsHandler] Notification created but no ID returned");
+        return;
+      }
       setTimeout(() => {
         chrome.notifications.clear(id);
       }, 3000);

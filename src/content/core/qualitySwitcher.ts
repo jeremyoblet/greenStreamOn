@@ -118,7 +118,7 @@ export class QualitySwitcher {
   async waitForElement(selector: string, timeout: number = 2000, validateFn?: (el: Element) => boolean): Promise<Element> {
     return new Promise((resolve, reject) => {
       const tryMatch = () => {
-        const candidates = document.querySelectorAll(selector);
+        const candidates = Array.from(document.querySelectorAll(selector));
         for (const el of candidates) {
           if (!validateFn || validateFn(el)) return el;
         }
@@ -183,7 +183,7 @@ export class QualitySwitcher {
           };
         })
           .filter((q) => isPremiumUser || !q.isPremium);
-      let finalQuality = targetQuality;
+      let finalQuality: string = targetQuality;
 
       if (targetQuality.toLowerCase() === "auto") {
         const auto = qualityList.find((q) =>

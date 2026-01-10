@@ -37,8 +37,10 @@ export class StorageHandler {
 
       const toInitialize: Partial<Settings> = {};
       for (const key in defaultSettings) {
+        const settingKey = key as keyof Settings;
         if (storedSettings[key] === undefined) {
-          toInitialize[key as keyof Settings] = defaultSettings[key];
+          (toInitialize as Record<string, unknown>)[settingKey] =
+            defaultSettings[settingKey];
         }
       }
 
