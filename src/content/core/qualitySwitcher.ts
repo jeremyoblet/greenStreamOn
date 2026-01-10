@@ -12,6 +12,36 @@ import { checkIfUserIsPremium } from "../ui/checkPremiumStatus";
  */
 
 export class QualitySwitcher {
+  private readonly MENU_SELECTOR = ".ytp-settings-menu";
+  private readonly TRANSPARENT_CLASS = "gso-menu-hidden";
+
+  private injectStyles(): void {
+    if (document.getElementById("gso-styles")) return;
+    const style = document.createElement("style");
+    style.id = "gso-styles";
+    style.textContent = `
+      .${this.TRANSPARENT_CLASS} {
+        opacity: 0 !important;
+        pointer-events: auto !important;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  private hideMenu(): void {
+    this.injectStyles();
+    const menu = document.querySelector(this.MENU_SELECTOR);
+    if (menu) {
+      menu.classList.add(this.TRANSPARENT_CLASS);
+    }
+  }
+
+  private showMenu(): void {
+    const menu = document.querySelector(this.MENU_SELECTOR);
+    if (menu) {
+      menu.classList.remove(this.TRANSPARENT_CLASS);
+    }
+  }
 
   async handleVisibilityChange(): Promise<void> {
     try {
@@ -93,7 +123,9 @@ export class QualitySwitcher {
     button: HTMLElement,
     callback: () => void
   ): Promise<void> {
+    this.injectStyles();
     button.click();
+    this.hideMenu();
 
     try {
       const qualityItem = await this.waitForElement(
@@ -104,6 +136,7 @@ export class QualitySwitcher {
 
       if (qualityItem instanceof HTMLElement) {
         qualityItem.click();
+        this.hideMenu();
         setTimeout(callback, 500);
       } else {
         console.warn("[qualitySwitcher] Element 'quality' not found.");
@@ -227,13 +260,14 @@ export class QualitySwitcher {
   }
 
   forceCloseSettingsMenu(): void {
-    const menuSettings = document.querySelector(".ytp-settings-menu");
+    const menuSettings = document.querySelector(this.MENU_SELECTOR);
     const buttonSettings = document.querySelector(".ytp-settings-button") as HTMLElement | null;
 
     if (menuSettings && menuSettings instanceof HTMLElement && menuSettings.offsetParent !== null && buttonSettings) {
       buttonSettings.click();
       console.log("[qualitySwitcher] Settings menu closed manually.");
     }
+    this.showMenu();
   }
 
   notifyQualityChange(finalQuality: string): void {
