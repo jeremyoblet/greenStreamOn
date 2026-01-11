@@ -40,4 +40,6 @@ export type Message =
       quality: string;
       visibility: "visible" | "hidden";
     }
-  | { type: "notifyTabsQualityChanged" };
+  | { type: "notifyTabsQualityChanged" }
+  | { type: "addBandwidthSaved"; megabytes: number }
+  | { type: "getBandwidthSaved" };

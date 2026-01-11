@@ -8,6 +8,19 @@ import { VideoQuality } from "../types";
 
 document.addEventListener("DOMContentLoaded", async () => {
   const ui = getUIElements();
+  const bandwidthDisplay = document.getElementById("bandwidthSaved") as HTMLSpanElement;
+
+  async function loadBandwidthSaved() {
+    chrome.runtime.sendMessage({ type: "getBandwidthSaved" }, (response) => {
+      if (response?.bandwidthSaved !== undefined) {
+        updateBandwidthDisplay(response.bandwidthSaved);
+      }
+    });
+  }
+
+  function updateBandwidthDisplay(megabytes: number) {
+    bandwidthDisplay.textContent = megabytes.toFixed(2);
+  }
 
   async function applySettingsToUI() {
     const settings = await getSettingsFromBackground();
@@ -40,6 +53,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (changes.extensionEnabled !== undefined) {
         ui.extensionCheckbox.checked = changes.extensionEnabled.newValue;
       }
+      if (changes.bandwidthSaved !== undefined) {
+        updateBandwidthDisplay(changes.bandwidthSaved.newValue);
+      }
     });
   }
 
@@ -68,6 +84,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   await applySettingsToUI();
+  await loadBandwidthSaved();
   addListeners();
   listenForStorageChanges();
 });

@@ -1,5 +1,7 @@
 import { Settings, VideoQuality } from "../../types";
 import { checkIfUserIsPremium } from "../ui/checkPremiumStatus";
+import { BandwidthTracker } from "./bandwidthTracker";
+import { extractResolutionNumber } from "./bitrateMapping";
 
 /** TODO
  * quand on ouvre le popup, regarder si on est premium ou pas
@@ -16,6 +18,7 @@ export class QualitySwitcher {
   private readonly TRANSPARENT_CLASS = "gso-menu-hidden";
   private isChangingQuality = false;
   private wasPlayingBeforeHidden = false;
+  private bandwidthTracker = new BandwidthTracker();
 
   private injectStyles(): void {
     if (document.getElementById("gso-styles")) return;
@@ -113,6 +116,13 @@ export class QualitySwitcher {
 
       const { visibleQuality, hiddenQuality } = storedSettings;
       const targetQuality = document.hidden ? hiddenQuality : visibleQuality;
+
+      // Start tracking when tab is hidden (saving bandwidth), stop when visible
+      if (document.hidden) {
+        this.bandwidthTracker.start();
+      } else {
+        this.bandwidthTracker.stop();
+      }
 
       console.log(`[qualitySwitcher] Quality applied : ${targetQuality}`);
 
@@ -276,6 +286,15 @@ export class QualitySwitcher {
           };
         })
         .filter((q) => isPremiumUser || !q.isPremium);
+
+      // Find max available quality (highest resolution, excluding "Auto")
+      const maxQuality = qualityList
+        .filter((q) => q.resolution !== null)
+        .sort((a, b) => b.resolution! - a.resolution!)[0];
+      if (maxQuality) {
+        this.bandwidthTracker.setMaxAvailableQuality(maxQuality.label);
+      }
+
       let finalQuality: string = targetQuality;
 
       if (targetQuality.toLowerCase() === "auto") {
@@ -310,6 +329,7 @@ export class QualitySwitcher {
       }
 
       console.log(`[qualitySwitcher] Selected quality : ${finalQuality}`);
+      this.bandwidthTracker.setCurrentQuality(finalQuality);
       callback(finalQuality);
     } catch (error) {
       console.error("[qualitySwitcher] Error when quality selection :", error);

@@ -160,3 +160,16 @@ button:hover {
 .text-green {
   color: #d4ff00;
 }
+
+.bandwidth-counter {
+  font-size: 13px;
+  color: #a0a0a0;
+  margin-top: 10px;
+  padding: 8px;
+  text-align: center;
+}
+
+.bandwidth-counter #bandwidthSaved {
+  color: #4caf50;
+  font-weight: bold;
+}

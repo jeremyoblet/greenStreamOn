@@ -29,5 +29,20 @@ export async function handleContentMessage(
     return true;
   }
 
+  if (message.type === "addBandwidthSaved") {
+    const result = await chrome.storage.sync.get("bandwidthSaved");
+    const currentSaved = result.bandwidthSaved ?? 0;
+    const newSaved = currentSaved + message.megabytes;
+    await chrome.storage.sync.set({ bandwidthSaved: newSaved });
+    sendResponse({ success: true });
+    return true;
+  }
+
+  if (message.type === "getBandwidthSaved") {
+    const result = await chrome.storage.sync.get("bandwidthSaved");
+    sendResponse({ bandwidthSaved: result.bandwidthSaved ?? 0 });
+    return true;
+  }
+
   return false;
 }
