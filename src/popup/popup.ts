@@ -6,20 +6,26 @@ import {
 } from "./messaging";
 import { VideoQuality } from "../types";
 
+// ADEME network value: 18 gCO2e/Go = 0.018 gCO2e/Mo (fixed network average)
+const CO2_PER_MO = 0.018;
+
 document.addEventListener("DOMContentLoaded", async () => {
   const ui = getUIElements();
   const bandwidthDisplay = document.getElementById("bandwidthSaved") as HTMLSpanElement;
+  const co2Display = document.getElementById("co2Saved") as HTMLSpanElement;
 
   async function loadBandwidthSaved() {
     chrome.runtime.sendMessage({ type: "getBandwidthSaved" }, (response) => {
       if (response?.bandwidthSaved !== undefined) {
-        updateBandwidthDisplay(response.bandwidthSaved);
+        updateDisplays(response.bandwidthSaved);
       }
     });
   }
 
-  function updateBandwidthDisplay(megabytes: number) {
+  function updateDisplays(megabytes: number) {
     bandwidthDisplay.textContent = megabytes.toFixed(2);
+    const co2Saved = megabytes * CO2_PER_MO;
+    co2Display.textContent = co2Saved.toFixed(2);
   }
 
   async function applySettingsToUI() {
@@ -54,7 +60,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         ui.extensionCheckbox.checked = changes.extensionEnabled.newValue;
       }
       if (changes.bandwidthSaved !== undefined) {
-        updateBandwidthDisplay(changes.bandwidthSaved.newValue);
+        updateDisplays(changes.bandwidthSaved.newValue);
       }
     });
   }

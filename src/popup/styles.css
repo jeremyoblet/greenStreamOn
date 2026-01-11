@@ -161,7 +161,7 @@ button:hover {
   color: #d4ff00;
 }
 
-.bandwidth-counter {
+.savings-counters {
   font-size: 13px;
   color: #a0a0a0;
   margin-top: 10px;
@@ -169,7 +169,16 @@ button:hover {
   text-align: center;
 }
 
-.bandwidth-counter #bandwidthSaved {
+.counter-line {
+  margin: 4px 0;
+}
+
+.savings-counters #bandwidthSaved {
   color: #4caf50;
+  font-weight: bold;
+}
+
+.savings-counters #co2Saved {
+  color: #81c784;
   font-weight: bold;
 }

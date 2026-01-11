@@ -1,5 +1,8 @@
 import { getBitrateForQuality } from "./bitrateMapping";
 
+const REFERENCE_QUALITY_1080P = "1080p";
+const BITRATE_1080P = getBitrateForQuality(REFERENCE_QUALITY_1080P);
+
 export class BandwidthTracker {
   private trackingInterval: number | null = null;
   private lastTrackTime: number = 0;
@@ -57,9 +60,18 @@ export class BandwidthTracker {
     }
 
     const currentBitrate = getBitrateForQuality(this.currentQuality);
-    const maxBitrate = getBitrateForQuality(this.maxAvailableQuality);
+    const maxAvailableBitrate = getBitrateForQuality(this.maxAvailableQuality);
 
-    if (currentBitrate >= maxBitrate) {
+    // When visible: use 1080p as reference (or max available if lower)
+    // When hidden: use max available quality as reference
+    let referenceBitrate: number;
+    if (document.hidden) {
+      referenceBitrate = maxAvailableBitrate;
+    } else {
+      referenceBitrate = Math.min(BITRATE_1080P, maxAvailableBitrate);
+    }
+
+    if (currentBitrate >= referenceBitrate) {
       this.lastTrackTime = Date.now();
       return;
     }
@@ -70,8 +82,8 @@ export class BandwidthTracker {
 
     // Calculate saved bandwidth in megabytes
     // bitrate is in Mbps (megabits per second)
-    // saved = (maxBitrate - currentBitrate) * elapsedSeconds / 8 (convert bits to bytes)
-    const savedMegabytes = ((maxBitrate - currentBitrate) * elapsedSeconds) / 8;
+    // saved = (referenceBitrate - currentBitrate) * elapsedSeconds / 8 (convert bits to bytes)
+    const savedMegabytes = ((referenceBitrate - currentBitrate) * elapsedSeconds) / 8;
 
     if (savedMegabytes > 0) {
       this.sendSavingsToBackground(savedMegabytes);

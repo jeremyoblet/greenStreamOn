@@ -117,12 +117,8 @@ export class QualitySwitcher {
       const { visibleQuality, hiddenQuality } = storedSettings;
       const targetQuality = document.hidden ? hiddenQuality : visibleQuality;
 
-      // Start tracking when tab is hidden (saving bandwidth), stop when visible
-      if (document.hidden) {
-        this.bandwidthTracker.start();
-      } else {
-        this.bandwidthTracker.stop();
-      }
+      // Always track bandwidth savings (both hidden and visible at lower quality)
+      this.bandwidthTracker.start();
 
       console.log(`[qualitySwitcher] Quality applied : ${targetQuality}`);
 
