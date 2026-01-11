@@ -34,6 +34,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.log("Tous les réglages mis à jour ?", response.success);
   }
 
+  function listenForStorageChanges() {
+    chrome.storage.onChanged.addListener((changes, areaName) => {
+      if (areaName !== "sync") return;
+      if (changes.extensionEnabled !== undefined) {
+        ui.extensionCheckbox.checked = changes.extensionEnabled.newValue;
+      }
+    });
+  }
+
   function addListeners() {
     ui.extensionCheckbox.addEventListener("change", async () => {
       await updateAllSettingsFromUI();
@@ -60,4 +69,5 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   await applySettingsToUI();
   addListeners();
+  listenForStorageChanges();
 });

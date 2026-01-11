@@ -16,6 +16,32 @@ const qualityEmojiMap: Record<string, string> = {
   Auto: "⚙️",
 };
 
+export function showToggleNotification(enabled: boolean): void {
+  const notificationId = `toggle-${Date.now()}`;
+  chrome.notifications.create(
+    notificationId,
+    {
+      type: "basic",
+      iconUrl: "icons/icon_128.png",
+      title: "Green Stream ON",
+      message: enabled ? "✅ Extension enabled" : "⛔ Extension disabled",
+    },
+    (id) => {
+      if (chrome.runtime.lastError) {
+        console.error(
+          "[notificationsHandler] Failed to create notification:",
+          chrome.runtime.lastError.message
+        );
+        return;
+      }
+      if (!id) return;
+      setTimeout(() => {
+        chrome.notifications.clear(id);
+      }, 2000);
+    }
+  );
+}
+
 export function queueNotification(
   visibility: "visible" | "hidden",
   quality: string

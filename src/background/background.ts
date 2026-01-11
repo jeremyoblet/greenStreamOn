@@ -1,6 +1,7 @@
 import { handlePopupMessage } from "./handlers/popupHandlers";
 import { handleContentMessage } from "./handlers/contentHandlers";
 import { StorageHandler } from "./handlers/storageHandler";
+import { showToggleNotification } from "./handlers/notificationsHandler";
 
 const storage = new StorageHandler();
 
@@ -13,6 +14,7 @@ chrome.commands.onCommand.addListener(async (command) => {
     const settings = await storage.readMultipleSettings();
     const newEnabled = !settings.extensionEnabled;
     await storage.writeMultipleSettings({ extensionEnabled: newEnabled });
+    showToggleNotification(newEnabled);
     console.log(`[background] Extension toggled: ${newEnabled ? "enabled" : "disabled"}`);
   }
 });

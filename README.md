@@ -1,14 +1,15 @@
 # 🎥 GREEN STREAM ON (Chrome Extension)
 
 **Automatically optimize YouTube video quality based on Chrome tab or window visibility.**
+shortcut: alt + shift +g -> switch enabling the extension
 
 ## 🚀 Features
 
-* 🔻 Automatically lowers video quality when the tab or Chrome window is hidden
-* 🔺 Automatically restores a preferred quality when the tab becomes active again
-* ⚙️ User-configurable min and max quality via a simple interface (`popup.html`)
-* 🧹 Modular and extensible architecture
-* 🛠️ Developed in TypeScript with `esbuild` for bundling
+- 🔻 Automatically lowers video quality when the tab or Chrome window is hidden
+- 🔺 Automatically restores a preferred quality when the tab becomes active again
+- ⚙️ User-configurable min and max quality via a simple interface (`popup.html`)
+- 🧹 Modular and extensible architecture
+- 🛠️ Developed in TypeScript with `esbuild` for bundling
 
 ## 🧱 Architecture
 
@@ -70,10 +71,10 @@ npm run build
 
 4. **Load the extension in Chrome:**
 
-   * Go to `chrome://extensions/`
-   * Enable **Developer Mode**
-   * Click **Load unpacked**
-   * Select the `dist/` folder
+   - Go to `chrome://extensions/`
+   - Enable **Developer Mode**
+   - Click **Load unpacked**
+   - Select the `dist/` folder
 
 ## 📆 Packaging & Publishing
 
@@ -81,14 +82,14 @@ A GitHub Actions pipeline builds and (optionally) publishes the extension to the
 
 ## 📌 Chrome Permissions Used
 
-* `tabs`
-* `storage`
-* `notifications`
+- `tabs`
+- `storage`
+- `notifications`
 
 ## 📌 Roadmap
 
-* [x] MVP for automatic video quality adjustment
-* [ ] Support for multiple video platforms (Twitch, Vimeo...)
-* [ ] UI improvements
-* [ ] Anonymous usage statistics
-* [ ] Premium account connection ( connecting to an another service )
+- [x] MVP for automatic video quality adjustment
+- [ ] Support for multiple video platforms (Twitch, Vimeo...)
+- [ ] UI improvements
+- [ ] Anonymous usage statistics
+- [ ] Premium account connection ( connecting to an another service )
