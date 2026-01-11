@@ -7,4 +7,6 @@
 
 5. on pourrait setup un raccourci clavier pour activer ou non l'extension
 
-6. gérer un mode de pause automatique et de play auto quand on switch entre les tabs youtube
+6. SETUP SHORTCUT FOR ACTIVATION
+
+7. MAKE A COUNTER
