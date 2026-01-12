@@ -1,6 +1,6 @@
 {
-  "name": "Green Stream ON",
-  "version": "0.2.0",
+  "name": "Green Stream On",
+  "version": "0.3.0",
   "manifest_version": 3,
   "description": "Automatically adjusts YouTube video quality based on tab or window visibility.",
   "permissions": ["notifications", "storage", "tabs"],
