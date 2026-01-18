@@ -177,11 +177,6 @@ export class QualitySwitcher {
 
     try {
       await this.openSettingsMenu(settingsButton);
-      await this.waitForElement(
-        ".ytp-menuitem-label",
-        5000,
-        (el) => this.isQualityOption(el)
-      );
       await this.selectQuality(targetQuality, (finalQuality) => {
         this.notifyQualityChange(finalQuality);
       });
@@ -207,7 +202,12 @@ export class QualitySwitcher {
     if (qualityItem instanceof HTMLElement) {
       qualityItem.click();
       this.hideMenu();
-      await this.delay(500);
+      // Wait for quality options to appear before returning
+      await this.waitForElement(
+        ".ytp-menuitem-label",
+        5000,
+        (el) => this.isQualityOption(el)
+      );
     } else {
       throw new Error("Quality menu item not found");
     }
