@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const bandwidthDisplay = document.getElementById("bandwidthSaved") as HTMLSpanElement;
   const co2Display = document.getElementById("co2Saved") as HTMLSpanElement;
   const hiddenTimeDisplay = document.getElementById("hiddenPlayTime") as HTMLSpanElement;
-  const currentLevelDisplay = document.getElementById("currentLevel") as HTMLSpanElement;
+  const levelTitleDisplay = document.getElementById("levelTitle") as HTMLSpanElement;
   const progressFill = document.getElementById("progressFill") as HTMLDivElement;
   const progressCurrent = document.getElementById("progressCurrent") as HTMLSpanElement;
   const progressGoal = document.getElementById("progressGoal") as HTMLSpanElement;
@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function updateLevelProgress(megabytes: number) {
     const levelInfo = getLevelInfo(megabytes);
-    currentLevelDisplay.textContent = levelInfo.currentLevel.toString();
+    levelTitleDisplay.textContent = levelInfo.title;
     progressCurrent.textContent = levelInfo.progressInLevel.toFixed(2);
     progressGoal.textContent = levelInfo.goalForLevel.toString();
 
