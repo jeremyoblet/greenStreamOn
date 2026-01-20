@@ -44,5 +44,20 @@ export async function handleContentMessage(
     return true;
   }
 
+  if (message.type === "addHiddenPlayTime") {
+    const result = await chrome.storage.sync.get("hiddenPlayTime");
+    const currentTime = result.hiddenPlayTime ?? 0;
+    const newTime = currentTime + message.seconds;
+    await chrome.storage.sync.set({ hiddenPlayTime: newTime });
+    sendResponse({ success: true });
+    return true;
+  }
+
+  if (message.type === "getHiddenPlayTime") {
+    const result = await chrome.storage.sync.get("hiddenPlayTime");
+    sendResponse({ hiddenPlayTime: result.hiddenPlayTime ?? 0 });
+    return true;
+  }
+
   return false;
 }

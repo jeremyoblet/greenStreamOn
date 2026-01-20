@@ -9,11 +9,13 @@ export class BandwidthTracker {
   private currentQuality: string | null = null;
   private maxAvailableQuality: string | null = null;
   private readonly TRACK_INTERVAL_MS = 5000;
+  private lastHiddenTrackTime: number = 0;
 
   start(): void {
     if (this.trackingInterval) return;
 
     this.lastTrackTime = Date.now();
+    this.lastHiddenTrackTime = Date.now();
     this.trackingInterval = window.setInterval(() => {
       this.trackSavings();
     }, this.TRACK_INTERVAL_MS);
@@ -49,13 +51,24 @@ export class BandwidthTracker {
   }
 
   private trackSavings(): void {
+    const now = Date.now();
+
+    // Track hidden play time when tab is hidden and video is playing
+    if (document.hidden && this.isVideoPlaying()) {
+      const hiddenElapsedSeconds = (now - this.lastHiddenTrackTime) / 1000;
+      if (hiddenElapsedSeconds > 0) {
+        this.sendHiddenTimeToBackground(hiddenElapsedSeconds);
+      }
+    }
+    this.lastHiddenTrackTime = now;
+
     if (!this.isVideoPlaying()) {
-      this.lastTrackTime = Date.now();
+      this.lastTrackTime = now;
       return;
     }
 
     if (!this.currentQuality || !this.maxAvailableQuality) {
-      this.lastTrackTime = Date.now();
+      this.lastTrackTime = now;
       return;
     }
 
@@ -72,11 +85,10 @@ export class BandwidthTracker {
     }
 
     if (currentBitrate >= referenceBitrate) {
-      this.lastTrackTime = Date.now();
+      this.lastTrackTime = now;
       return;
     }
 
-    const now = Date.now();
     const elapsedSeconds = (now - this.lastTrackTime) / 1000;
     this.lastTrackTime = now;
 
@@ -96,6 +108,17 @@ export class BandwidthTracker {
       (response) => {
         if (chrome.runtime.lastError) {
           console.warn("[bandwidthTracker] Failed to send savings:", chrome.runtime.lastError);
+        }
+      }
+    );
+  }
+
+  private sendHiddenTimeToBackground(seconds: number): void {
+    chrome.runtime.sendMessage(
+      { type: "addHiddenPlayTime", seconds },
+      (response) => {
+        if (chrome.runtime.lastError) {
+          console.warn("[bandwidthTracker] Failed to send hidden time:", chrome.runtime.lastError);
         }
       }
     );

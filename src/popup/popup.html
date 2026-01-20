@@ -93,10 +93,26 @@
 
       <div class="savings-counters">
         <div class="counter-line">
+          <span id="hiddenPlayTime">0:00:00</span> hidden play time
+        </div>
+        <div class="counter-line">
           <span id="bandwidthSaved">0.00</span> Mo Bandwidth saved
         </div>
         <div class="counter-line">
           <span id="co2Saved">0.00</span> gCO₂e saved
+        </div>
+      </div>
+
+      <div class="level-progress">
+        <div class="level-header">
+          <span class="level-title">Next level</span>
+          <span class="level-info">Level <span id="currentLevel">1</span></span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-text">
+          <span id="progressCurrent">0.00</span> / <span id="progressGoal">10</span> Mo
         </div>
       </div>
     </div>

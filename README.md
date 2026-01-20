@@ -1,5 +1,12 @@
 # 🎥 GREEN STREAM ON (Chrome Extension)
 
+---
+Streamez responsable sans efforts.
+Jusqu'à 90% de bande passante économisée en écoute passive.
+
+GreenStreamOn reduis automatiquement la qualité des vidéos YouTube lorsque la page est cachée ou réduite et rebascule automatiquement la qualité de visionnage définie lorsque la page est de nouveau visible.
+Idéal pour l'écoute passive de musique ou de podcasts en travaillant ou en surfant sur le web.
+
 **Automatically optimize YouTube video quality based on Chrome tab or window visibility.**
 shortcut: alt + shift +g -> switch enabling the extension
 

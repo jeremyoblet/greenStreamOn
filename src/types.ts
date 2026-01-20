@@ -42,4 +42,6 @@ export type Message =
     }
   | { type: "notifyTabsQualityChanged" }
   | { type: "addBandwidthSaved"; megabytes: number }
-  | { type: "getBandwidthSaved" };
+  | { type: "getBandwidthSaved" }
+  | { type: "addHiddenPlayTime"; seconds: number }
+  | { type: "getHiddenPlayTime" };
