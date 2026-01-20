@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Stream saver 🌱</title>
+    <title>Stream saver</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap"
       rel="stylesheet"
@@ -17,102 +17,118 @@
         ><span class="text-green">ON</span>
       </h1>
 
-      <div class="option-card">
-        <div class="option-line">
-          <label for="extensionEnabled" class="option-label">Enabled</label>
-          <label class="switch">
-            <input type="checkbox" id="extensionEnabled" />
-            <span class="slider"></span>
-          </label>
+      <div class="tabs">
+        <button class="tab-button" data-tab="login">Login</button>
+        <button class="tab-button active" data-tab="stats">Stats</button>
+        <button class="tab-button" data-tab="settings">Settings</button>
+      </div>
+
+      <div class="tab-content" id="tab-login">
+        <div class="login-placeholder">
+          <p>Login coming soon</p>
         </div>
       </div>
 
-      <div class="option-card">
-        <div class="option-line">
-          <label for="hiddenQuality" class="option-label">Min quality</label>
-          <select id="hiddenQuality">
-            <option value="Auto">Auto</option>
-            <option value="144">144p</option>
-            <option value="240">240p</option>
-            <option value="360">360p</option>
-            <option value="480">480p</option>
-            <option value="720">720p</option>
-            <option value="1080">1080p</option>
-            <option value="1080hdpremium">1080pPremiumHD</option>
-            <option value="1440">1440p</option>
-            <option value="1440hdpremium">1440pPremiumHD</option>
-            <option value="2160">2160p</option>
-            <option value="2160hdpremium">2160pPremiumHD</option>
-            <option value="4320">4320p</option>
-            <option value="4320hdpremium">4320pPremiumHD</option>
-          </select>
+      <div class="tab-content active" id="tab-stats">
+        <div class="savings-counters">
+          <div class="counter-line">
+            <span id="hiddenPlayTime">0:00:00</span> hidden play time
+          </div>
+          <div class="counter-line">
+            <span id="bandwidthSaved">0.00</span> Mo Bandwidth saved
+          </div>
+          <div class="counter-line">
+            <span id="co2Saved">0.00</span> gCO₂e saved
+          </div>
         </div>
 
-        <div class="option-line">
-          <label for="visibleQuality" class="option-label">Max quality</label>
-          <select id="visibleQuality">
-            <option value="Auto">Auto</option>
-            <option value="144">144p</option>
-            <option value="240">240p</option>
-            <option value="360">360p</option>
-            <option value="480">480p</option>
-            <option value="720">720p</option>
-            <option value="1080">1080p</option>
-            <option value="1080hdpremium">1080pPremiumHD</option>
-            <option value="1440">1440p</option>
-            <option value="1440hdpremium">1440pPremiumHD</option>
-            <option value="2160">2160p</option>
-            <option value="2160hdpremium">2160pPremiumHD</option>
-            <option value="4320">4320p</option>
-            <option value="4320hdpremium">4320pPremiumHD</option>
-          </select>
+        <div class="level-progress">
+          <div class="level-header">
+            <span class="level-title">Next level</span>
+            <span class="level-info">Level <span id="currentLevel">1</span></span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <div class="progress-text">
+            <span id="progressCurrent">0.00</span> / <span id="progressGoal">10</span> Mo
+          </div>
         </div>
       </div>
 
-      <div class="option-card">
-        <div class="option-line">
-          <label for="notificationsEnabled" class="option-label"
-            >Notifications</label
-          >
-          <label class="switch">
-            <input type="checkbox" id="notificationsEnabled" />
-            <span class="slider"></span>
-          </label>
+      <div class="tab-content" id="tab-settings">
+        <div class="option-card">
+          <div class="option-line">
+            <label for="extensionEnabled" class="option-label">Enabled</label>
+            <label class="switch">
+              <input type="checkbox" id="extensionEnabled" />
+              <span class="slider"></span>
+            </label>
+          </div>
         </div>
-      </div>
 
-      <div class="option-card">
-        <div class="option-line">
-          <label for="pauseModeEnabled" class="option-label">Pause mode</label>
-          <label class="switch">
-            <input type="checkbox" id="pauseModeEnabled" />
-            <span class="slider"></span>
-          </label>
-        </div>
-      </div>
+        <div class="option-card">
+          <div class="option-line">
+            <label for="hiddenQuality" class="option-label">Min quality</label>
+            <select id="hiddenQuality">
+              <option value="Auto">Auto</option>
+              <option value="144">144p</option>
+              <option value="240">240p</option>
+              <option value="360">360p</option>
+              <option value="480">480p</option>
+              <option value="720">720p</option>
+              <option value="1080">1080p</option>
+              <option value="1080hdpremium">1080pPremiumHD</option>
+              <option value="1440">1440p</option>
+              <option value="1440hdpremium">1440pPremiumHD</option>
+              <option value="2160">2160p</option>
+              <option value="2160hdpremium">2160pPremiumHD</option>
+              <option value="4320">4320p</option>
+              <option value="4320hdpremium">4320pPremiumHD</option>
+            </select>
+          </div>
 
-      <div class="savings-counters">
-        <div class="counter-line">
-          <span id="hiddenPlayTime">0:00:00</span> hidden play time
+          <div class="option-line">
+            <label for="visibleQuality" class="option-label">Max quality</label>
+            <select id="visibleQuality">
+              <option value="Auto">Auto</option>
+              <option value="144">144p</option>
+              <option value="240">240p</option>
+              <option value="360">360p</option>
+              <option value="480">480p</option>
+              <option value="720">720p</option>
+              <option value="1080">1080p</option>
+              <option value="1080hdpremium">1080pPremiumHD</option>
+              <option value="1440">1440p</option>
+              <option value="1440hdpremium">1440pPremiumHD</option>
+              <option value="2160">2160p</option>
+              <option value="2160hdpremium">2160pPremiumHD</option>
+              <option value="4320">4320p</option>
+              <option value="4320hdpremium">4320pPremiumHD</option>
+            </select>
+          </div>
         </div>
-        <div class="counter-line">
-          <span id="bandwidthSaved">0.00</span> Mo Bandwidth saved
-        </div>
-        <div class="counter-line">
-          <span id="co2Saved">0.00</span> gCO₂e saved
-        </div>
-      </div>
 
-      <div class="level-progress">
-        <div class="level-header">
-          <span class="level-title">Next level</span>
-          <span class="level-info">Level <span id="currentLevel">1</span></span>
+        <div class="option-card">
+          <div class="option-line">
+            <label for="notificationsEnabled" class="option-label"
+              >Notifications</label
+            >
+            <label class="switch">
+              <input type="checkbox" id="notificationsEnabled" />
+              <span class="slider"></span>
+            </label>
+          </div>
         </div>
-        <div class="progress-bar">
-          <div class="progress-fill" id="progressFill"></div>
-        </div>
-        <div class="progress-text">
-          <span id="progressCurrent">0.00</span> / <span id="progressGoal">10</span> Mo
+
+        <div class="option-card">
+          <div class="option-line">
+            <label for="pauseModeEnabled" class="option-label">Pause mode</label>
+            <label class="switch">
+              <input type="checkbox" id="pauseModeEnabled" />
+              <span class="slider"></span>
+            </label>
+          </div>
         </div>
       </div>
     </div>
