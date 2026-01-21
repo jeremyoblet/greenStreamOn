@@ -188,6 +188,59 @@ button:hover {
   font-weight: bold;
 }
 
+/* Achievements */
+.achievements-section {
+  background: #2b2b2b;
+  border-radius: 8px;
+  padding: 12px 15px;
+  margin-top: 10px;
+}
+
+.achievements-header {
+  font-size: 13px;
+  color: #a0a0a0;
+  font-weight: 500;
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+.achievements-list {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.achievement-item {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.achievement-item.placeholder .achievement-icon {
+  width: 100%;
+  height: 100%;
+  background: #1b1b1b;
+  border: 2px dashed #3b3b3b;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+
+.achievement-item.unlocked .achievement-icon {
+  width: 100%;
+  height: 100%;
+  border: 2px solid #4caf50;
+  border-radius: 50%;
+  box-sizing: border-box;
+  background-size: cover;
+  background-position: center;
+}
+
+.achievement-item.unlocked {
+  box-shadow: 0 0 8px rgba(76, 175, 80, 0.4);
+}
+
 .level-progress {
   background: #2b2b2b;
   border-radius: 8px;
