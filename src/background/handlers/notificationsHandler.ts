@@ -42,6 +42,32 @@ export function showToggleNotification(enabled: boolean): void {
   );
 }
 
+export function showLevelUpNotification(level: number, title: string): void {
+  const notificationId = `levelup-${Date.now()}`;
+  chrome.notifications.create(
+    notificationId,
+    {
+      type: "basic",
+      iconUrl: "icons/icon_128.png",
+      title: "Level Up!",
+      message: `Level ${level}: ${title}`,
+    },
+    (id) => {
+      if (chrome.runtime.lastError) {
+        console.error(
+          "[notificationsHandler] Failed to create notification:",
+          chrome.runtime.lastError.message
+        );
+        return;
+      }
+      if (!id) return;
+      setTimeout(() => {
+        chrome.notifications.clear(id);
+      }, 4000);
+    }
+  );
+}
+
 export function queueNotification(
   visibility: "visible" | "hidden",
   quality: string

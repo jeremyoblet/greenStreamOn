@@ -1,6 +1,7 @@
 import { StorageHandler } from "./storageHandler";
 import { Message } from "../../types";
-import { queueNotification } from "./notificationsHandler";
+import { queueNotification, showLevelUpNotification } from "./notificationsHandler";
+import { getLevelInfo } from "../../data/levels";
 
 const storage = new StorageHandler();
 
@@ -33,7 +34,23 @@ export async function handleContentMessage(
     const result = await chrome.storage.sync.get("bandwidthSaved");
     const currentSaved = result.bandwidthSaved ?? 0;
     const newSaved = currentSaved + message.megabytes;
+
+    // Check for level up
+    const oldLevel = getLevelInfo(currentSaved).currentLevel;
+    const newLevelInfo = getLevelInfo(newSaved);
+
     await chrome.storage.sync.set({ bandwidthSaved: newSaved });
+
+    // Send notification if level changed
+    if (newLevelInfo.currentLevel > oldLevel) {
+      const notificationsEnabled = await storage
+        .readMultipleSettings()
+        .then((s) => s.notificationsEnabled);
+      if (notificationsEnabled) {
+        showLevelUpNotification(newLevelInfo.currentLevel, newLevelInfo.title);
+      }
+    }
+
     sendResponse({ success: true });
     return true;
   }
