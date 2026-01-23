@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const ui = getUIElements();
   const bandwidthDisplay = document.getElementById("bandwidthSaved") as HTMLSpanElement;
   const co2Display = document.getElementById("co2Saved") as HTMLSpanElement;
-  const hiddenTimeDisplay = document.getElementById("hiddenPlayTime") as HTMLSpanElement;
+  const ecoTimeDisplay = document.getElementById("ecoPlayTime") as HTMLSpanElement;
   const levelTitleDisplay = document.getElementById("levelTitle") as HTMLSpanElement;
   const progressFill = document.getElementById("progressFill") as HTMLDivElement;
   const progressCurrent = document.getElementById("progressCurrent") as HTMLSpanElement;
@@ -35,10 +35,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  async function loadHiddenPlayTime() {
-    chrome.runtime.sendMessage({ type: "getHiddenPlayTime" }, (response) => {
-      if (response?.hiddenPlayTime !== undefined) {
-        updateHiddenTimeDisplay(response.hiddenPlayTime);
+  async function loadEcoPlayTime() {
+    chrome.runtime.sendMessage({ type: "getEcoPlayTime" }, (response) => {
+      if (response?.ecoPlayTime !== undefined) {
+        updateEcoTimeDisplay(response.ecoPlayTime);
       }
     });
   }
@@ -60,8 +60,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     progressFill.style.width = `${Math.min(percentage, 100)}%`;
   }
 
-  function updateHiddenTimeDisplay(seconds: number) {
-    hiddenTimeDisplay.textContent = formatTime(seconds);
+  function updateEcoTimeDisplay(seconds: number) {
+    ecoTimeDisplay.textContent = formatTime(seconds);
   }
 
   async function applySettingsToUI() {
@@ -98,8 +98,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (changes.bandwidthSaved !== undefined) {
         updateBandwidthDisplays(changes.bandwidthSaved.newValue);
       }
-      if (changes.hiddenPlayTime !== undefined) {
-        updateHiddenTimeDisplay(changes.hiddenPlayTime.newValue);
+      if (changes.ecoPlayTime !== undefined) {
+        updateEcoTimeDisplay(changes.ecoPlayTime.newValue);
       }
     });
   }
@@ -147,7 +147,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   await applySettingsToUI();
   await loadBandwidthSaved();
-  await loadHiddenPlayTime();
+  await loadEcoPlayTime();
   addListeners();
   listenForStorageChanges();
   setupTabs();

@@ -44,18 +44,18 @@ export async function handleContentMessage(
     return true;
   }
 
-  if (message.type === "addHiddenPlayTime") {
-    const result = await chrome.storage.sync.get("hiddenPlayTime");
-    const currentTime = result.hiddenPlayTime ?? 0;
+  if (message.type === "addEcoPlayTime") {
+    const result = await chrome.storage.sync.get("ecoPlayTime");
+    const currentTime = result.ecoPlayTime ?? 0;
     const newTime = currentTime + message.seconds;
-    await chrome.storage.sync.set({ hiddenPlayTime: newTime });
+    await chrome.storage.sync.set({ ecoPlayTime: newTime });
     sendResponse({ success: true });
     return true;
   }
 
-  if (message.type === "getHiddenPlayTime") {
-    const result = await chrome.storage.sync.get("hiddenPlayTime");
-    sendResponse({ hiddenPlayTime: result.hiddenPlayTime ?? 0 });
+  if (message.type === "getEcoPlayTime") {
+    const result = await chrome.storage.sync.get("ecoPlayTime");
+    sendResponse({ ecoPlayTime: result.ecoPlayTime ?? 0 });
     return true;
   }
 

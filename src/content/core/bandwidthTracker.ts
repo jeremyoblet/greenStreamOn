@@ -9,13 +9,11 @@ export class BandwidthTracker {
   private currentQuality: string | null = null;
   private maxAvailableQuality: string | null = null;
   private readonly TRACK_INTERVAL_MS = 5000;
-  private lastHiddenTrackTime: number = 0;
 
   start(): void {
     if (this.trackingInterval) return;
 
     this.lastTrackTime = Date.now();
-    this.lastHiddenTrackTime = Date.now();
     this.trackingInterval = window.setInterval(() => {
       this.trackSavings();
     }, this.TRACK_INTERVAL_MS);
@@ -53,35 +51,24 @@ export class BandwidthTracker {
   private trackSavings(): void {
     const now = Date.now();
 
-    // Track hidden play time when tab is hidden and video is playing
-    if (document.hidden && this.isVideoPlaying()) {
-      const hiddenElapsedSeconds = (now - this.lastHiddenTrackTime) / 1000;
-      if (hiddenElapsedSeconds > 0) {
-        this.sendHiddenTimeToBackground(hiddenElapsedSeconds);
-      }
-    }
-    this.lastHiddenTrackTime = now;
-
     if (!this.isVideoPlaying()) {
       this.lastTrackTime = now;
       return;
     }
 
-    if (!this.currentQuality || !this.maxAvailableQuality) {
+    if (!this.currentQuality) {
       this.lastTrackTime = now;
       return;
     }
 
     const currentBitrate = getBitrateForQuality(this.currentQuality);
-    const maxAvailableBitrate = getBitrateForQuality(this.maxAvailableQuality);
 
-    // When visible: use 1080p as reference (or max available if lower)
-    // When hidden: use max available quality as reference
-    let referenceBitrate: number;
-    if (document.hidden) {
-      referenceBitrate = maxAvailableBitrate;
-    } else {
-      referenceBitrate = Math.min(BITRATE_1080P, maxAvailableBitrate);
+    // Reference is always 1080p - we count savings when playing below 1080p
+    // When hidden and maxAvailable is set: use max available if higher than 1080p
+    let referenceBitrate: number = BITRATE_1080P;
+    if (document.hidden && this.maxAvailableQuality) {
+      const maxAvailableBitrate = getBitrateForQuality(this.maxAvailableQuality);
+      referenceBitrate = Math.max(BITRATE_1080P, maxAvailableBitrate);
     }
 
     if (currentBitrate >= referenceBitrate) {
@@ -100,6 +87,11 @@ export class BandwidthTracker {
     if (savedMegabytes > 0) {
       this.sendSavingsToBackground(savedMegabytes);
     }
+
+    // Track eco play time - same interval as bandwidth
+    if (elapsedSeconds > 0) {
+      this.sendEcoTimeToBackground(elapsedSeconds);
+    }
   }
 
   private sendSavingsToBackground(megabytes: number): void {
@@ -113,12 +105,12 @@ export class BandwidthTracker {
     );
   }
 
-  private sendHiddenTimeToBackground(seconds: number): void {
+  private sendEcoTimeToBackground(seconds: number): void {
     chrome.runtime.sendMessage(
-      { type: "addHiddenPlayTime", seconds },
+      { type: "addEcoPlayTime", seconds },
       (response) => {
         if (chrome.runtime.lastError) {
-          console.warn("[bandwidthTracker] Failed to send hidden time:", chrome.runtime.lastError);
+          console.warn("[bandwidthTracker] Failed to send eco time:", chrome.runtime.lastError);
         }
       }
     );
