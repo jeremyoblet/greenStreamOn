@@ -7,14 +7,35 @@ import {
 import { VideoQuality } from "../types";
 import { getLevelInfo } from "../data/levels";
 
+// API configuration
+const API_BASE_URL = "http://localhost:8000";
+
 // User session type
 type UserSession = {
-  email: string;
   username: string;
   avatarUrl: string;
   level: number;
   levelTitle: string;
   bandwidthSaved: number;
+  ecoPlayTime: number;
+  co2Saved: number;
+  accessToken: string;
+  refreshToken: string;
+};
+
+// API response type
+type LoginResponse = {
+  username: string;
+  avatar_url?: string;
+  stats: {
+    level: number;
+    eco_play_time_seconds: number;
+    total_play_time_seconds: number;
+    bandwidth_saved_bytes: number;
+    co2_saved_grams: number;
+  };
+  access_token: string;
+  refresh_token: string;
 };
 
 // Storage key for user session
@@ -145,10 +166,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   async function handleLogin() {
-    const email = loginEmail.value.trim();
+    const login = loginEmail.value.trim();
     const password = loginPassword.value;
 
-    if (!email || !password) {
+    if (!login || !password) {
       loginError.textContent = "Please enter email and password";
       return;
     }
@@ -159,31 +180,46 @@ document.addEventListener("DOMContentLoaded", async () => {
     loginError.textContent = "";
 
     try {
-      // TODO: Replace with actual API call
-      // Simulated login for now - extract username from email
-      const username = email.split("@")[0];
-
-      // Get current bandwidth to calculate level
-      const bandwidthResponse = await new Promise<{ bandwidthSaved?: number }>((resolve) => {
-        chrome.runtime.sendMessage({ type: "getBandwidthSaved" }, resolve);
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ login, password }),
       });
 
-      const bandwidthSaved = bandwidthResponse?.bandwidthSaved || 0;
-      const levelInfo = getLevelInfo(bandwidthSaved);
+      if (!response.ok) {
+        if (response.status === 401 || response.status === 404) {
+          loginError.textContent = "Invalid email or password";
+        } else {
+          loginError.textContent = "Login failed. Please try again.";
+        }
+        return;
+      }
+
+      const data: LoginResponse = await response.json();
+
+      // Convert bytes to Mo (megabytes)
+      const bandwidthSavedMo = data.stats.bandwidth_saved_bytes / (1024 * 1024);
+      const levelInfo = getLevelInfo(bandwidthSavedMo);
 
       const session: UserSession = {
-        email,
-        username,
-        avatarUrl: "",
-        level: levelInfo.currentLevel,
+        username: data.username,
+        avatarUrl: data.avatar_url || "",
+        level: data.stats.level,
         levelTitle: levelInfo.title,
-        bandwidthSaved,
+        bandwidthSaved: bandwidthSavedMo,
+        ecoPlayTime: data.stats.eco_play_time_seconds,
+        co2Saved: data.stats.co2_saved_grams,
+        accessToken: data.access_token,
+        refreshToken: data.refresh_token,
       };
 
       await saveUserSession(session);
       showUserProfile(session);
     } catch (error) {
-      loginError.textContent = "Login failed. Please try again.";
+      console.error("Login error:", error);
+      loginError.textContent = "Connection error. Is the server running?";
     } finally {
       loginButton.disabled = false;
       loginButton.textContent = "Login";
@@ -198,19 +234,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   async function checkAuthState() {
     const session = await getUserSession();
     if (session) {
-      // Update session with current bandwidth and level
-      const bandwidthResponse = await new Promise<{ bandwidthSaved?: number }>((resolve) => {
-        chrome.runtime.sendMessage({ type: "getBandwidthSaved" }, resolve);
-      });
-
-      const bandwidthSaved = bandwidthResponse?.bandwidthSaved || 0;
-      const levelInfo = getLevelInfo(bandwidthSaved);
-
-      session.bandwidthSaved = bandwidthSaved;
-      session.level = levelInfo.currentLevel;
-      session.levelTitle = levelInfo.title;
-
-      await saveUserSession(session);
       showUserProfile(session);
     } else {
       showLoginForm();

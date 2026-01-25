@@ -19,7 +19,7 @@
     "default_popup": "popup.html",
     "default_icon": "icons/icon_48.png"
   },
-  "host_permissions": ["*://www.youtube.com/*"],
+  "host_permissions": ["*://www.youtube.com/*", "http://localhost:8000/*"],
   "commands": {
     "toggle-extension": {
       "suggested_key": {
