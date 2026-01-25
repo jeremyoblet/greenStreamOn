@@ -24,7 +24,8 @@
       </div>
 
       <div class="tab-content" id="tab-login">
-        <div class="login-form">
+        <!-- Login Form (shown when logged out) -->
+        <div class="login-form" id="loginFormContainer">
           <div class="form-group">
             <label for="loginEmail" class="form-label">Email</label>
             <input type="email" id="loginEmail" class="form-input" placeholder="email@example.com" />
@@ -33,11 +34,44 @@
             <label for="loginPassword" class="form-label">Password</label>
             <input type="password" id="loginPassword" class="form-input" placeholder="********" />
           </div>
+          <div class="login-error" id="loginError"></div>
           <button id="loginButton" class="login-button">Login</button>
           <div class="register-link">
             <span>No account?</span>
             <a href="https://www.greenstreamon.com" target="_blank">Sign up</a>
           </div>
+        </div>
+
+        <!-- User Profile (shown when logged in) -->
+        <div class="user-profile" id="userProfileContainer" style="display: none;">
+          <div class="profile-header">
+            <div class="avatar-container">
+              <img id="userAvatar" class="user-avatar" src="" alt="Avatar" />
+              <div class="avatar-level-badge" id="avatarLevelBadge">1</div>
+            </div>
+            <div class="user-info">
+              <span class="user-name" id="userName">Username</span>
+              <div class="user-level">
+                <span class="level-icon">&#9733;</span>
+                <span class="level-text" id="userLevelText">Digital Seed</span>
+              </div>
+            </div>
+          </div>
+          <div class="profile-stats">
+            <div class="profile-stat">
+              <span class="stat-value" id="profileBandwidth">0.00</span>
+              <span class="stat-label">Mo saved</span>
+            </div>
+            <div class="profile-stat-divider"></div>
+            <div class="profile-stat">
+              <span class="stat-value" id="profileLevel">1</span>
+              <span class="stat-label">Level</span>
+            </div>
+          </div>
+          <button id="logoutButton" class="logout-button">
+            <span class="logout-icon">&#10148;</span>
+            Logout
+          </button>
         </div>
       </div>
 
